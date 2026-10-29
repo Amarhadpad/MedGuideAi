@@ -6,37 +6,12 @@ The project is being developed as a multi-stage system using Machine Learning, P
 
 ## Setup (Windows)
 
-Python 3.11 or newer is required. From the project root, create a virtual environment and install the dependencies:
-
-```powershell
-py -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r backend/requirements.txt
-npm install
-```
-
-Build the web frontend:
-
-```powershell
-npm run build
-```
-
-Start the complete web application from the project root:
-
-```powershell
-python backend/app.py
-```
-
-Open `http://127.0.0.1:5000`. Flask serves both the built React frontend and the prediction API, so only one server is needed to use the application.
-
-For frontend development with Vite hot reload, run both servers together:
-
-```powershell
-npm run dev
-```
-
-`npm run dev` starts Flask and Vite together. Open the local URL printed by Vite (normally `http://localhost:5173`); Vite proxies prediction requests to Flask. Press `Ctrl+C` to stop both servers. The pre-trained model is included, so model training is not required for normal use. Assessment history is saved in browser storage on the current device.
+See the [Windows setup guide](docs/SETUP_GUIDE.md) for prerequisites and a
+copy-paste PowerShell script that installs dependencies and starts the
+application. For later runs, open PowerShell in the repository root and run
+`npm run dev`. The pre-trained model is included, so model training is not
+required for normal use. Assessment history is saved in browser storage on the
+current device.
 
 The previous static frontend remains available at `/legacy.html`. It includes the project roadmap and the earlier Model 1 interface.
 
@@ -55,6 +30,17 @@ datasets/       # Source and processed datasets
 model/          # Trained model files
 scripts/        # Data preparation and model scripts
 ```
+
+## Project documentation
+
+- [Project requirements](docs/PROJECT_REQUIREMENTS.md) - user, functional,
+  non-functional, and setup requirements.
+- [Project report](docs/PROJECT_REPORT.md) - architecture, data/model
+  workflow, API, setup, current limitations, and future work.
+- [Setup guide](docs/SETUP_GUIDE.md) - Windows prerequisites, copy-paste
+  terminal setup script, run instructions, and troubleshooting.
+- [Python dependency file](backend/requirements.txt) - packages needed by the
+  Flask API and bundled model.
 
 ## Project Objectives
 
