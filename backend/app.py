@@ -1,16 +1,27 @@
+from pathlib import Path
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask import abort, send_from_directory
 import joblib
 import pandas as pd
 
-app = Flask(__name__)
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = PROJECT_DIR / "frontend"
+FRONTEND_DIST_DIR = FRONTEND_DIR / "dist"
+
+app = Flask(
+    __name__,
+    static_folder=str(FRONTEND_DIST_DIR / "assets"),
+    static_url_path="/assets",
+)
 CORS(app)
 
 # ==========================================
 # Load Model 1
 # ==========================================
 
-MODEL_PATH = "model/disease_prediction_model.pkl"
+MODEL_PATH = PROJECT_DIR / "model" / "disease_prediction_model.pkl"
 
 model = joblib.load(MODEL_PATH)
 
@@ -44,13 +55,45 @@ FEATURE_MAP = {
 
 
 # ==========================================
-# Home / Test Route
+# Frontend Routes
 # ==========================================
 
 @app.route("/", methods=["GET"])
 def home():
+    if not (FRONTEND_DIST_DIR / "index.html").is_file():
+        return jsonify({
+            "error": "Frontend build not found. Run `npm run build` in the frontend directory."
+        }), 503
 
-    return "MedGuide AI Model 1 API is running!"
+    return send_from_directory(FRONTEND_DIST_DIR, "index.html")
+
+
+@app.route("/legacy.html", methods=["GET"])
+def legacy_frontend():
+    return send_from_directory(FRONTEND_DIST_DIR, "legacy.html")
+
+
+@app.route("/styles.css", methods=["GET"])
+def legacy_styles():
+    return send_from_directory(FRONTEND_DIST_DIR, "styles.css")
+
+
+@app.route("/app.js", methods=["GET"])
+def legacy_script():
+    return send_from_directory(FRONTEND_DIST_DIR, "app.js")
+
+
+@app.route("/<path:path>", methods=["GET"])
+def frontend_route(path):
+    if Path(path).suffix:
+        abort(404)
+
+    if not (FRONTEND_DIST_DIR / "index.html").is_file():
+        return jsonify({
+            "error": "Frontend build not found. Run `npm run build` in the frontend directory."
+        }), 503
+
+    return send_from_directory(FRONTEND_DIST_DIR, "index.html")
 
 
 # ==========================================

@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-med-teal: #168c8b;
+  --color-med-teal-dark: #0f6f70;
+  --color-med-navy: #0b3146;
+  --color-med-canvas: #f7fbfb;
+  --color-med-amber: #d97706;
+  --color-med-red: #b3261e;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", "DM Sans", ui-sans-serif, sans-serif;
+}
+
+:root {
+  color: #0b3146;
+  background: #f7fbfb;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input { font: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #78bfbc; outline-offset: 3px; }
+::selection { color: #0b3146; background: #c4e9e5; }
+
+@media print {
+  body { background: white; }
+  header, footer, .no-print { display: none !important; }
+  #root { padding: 0; }
+  .print-card { border: 1px solid #d5e0e0; box-shadow: none; }
+}

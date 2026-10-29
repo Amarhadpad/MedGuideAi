@@ -414,5 +414,94 @@ if (analyzeButton) {
   );
 }
 
+const nearbyQuery = document.getElementById("nearby-query");
+const nearbyButton = document.getElementById("find-nearby-button");
+const nearbyStatus = document.getElementById("nearby-status");
+const nearbyMap = document.getElementById("nearby-map");
+const mapPlaceholder = document.getElementById("map-placeholder");
+const googleMapsLink = document.getElementById("google-maps-link");
+
+function clearNearbyResults() {
+  googleMapsLink.classList.add("hidden");
+  nearbyMap.classList.add("hidden");
+  nearbyMap.removeAttribute("src");
+  mapPlaceholder.classList.remove("hidden");
+}
+
+function showGoogleMapsSearch(query, coordinates) {
+  const search = coordinates
+    ? `${query} near ${coordinates.latitude},${coordinates.longitude}`
+    : `${query} near me`;
+  const encodedSearch = new URLSearchParams({ query: search }).toString();
+  const mapSearchUrl = `https://www.google.com/maps/search/?api=1&${encodedSearch}`;
+
+  googleMapsLink.href = mapSearchUrl;
+  googleMapsLink.classList.remove("hidden");
+
+  if (coordinates) {
+    const embedQuery = new URLSearchParams({
+      q: search,
+      output: "embed"
+    });
+    nearbyMap.src = `https://maps.google.com/maps?${embedQuery.toString()}`;
+    nearbyMap.classList.remove("hidden");
+    mapPlaceholder.classList.add("hidden");
+  }
+}
+
+if (nearbyButton && nearbyQuery && nearbyStatus) {
+  nearbyButton.addEventListener("click", () => {
+    clearNearbyResults();
+    const query = nearbyQuery.value.trim();
+
+    if (!query) {
+      nearbyStatus.textContent = "Enter a type of care to search, such as doctor or hospital.";
+      nearbyQuery.focus();
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      nearbyStatus.textContent =
+        "Location is not available in this browser. You can still search Google Maps for places near you.";
+      showGoogleMapsSearch(query);
+      return;
+    }
+
+    nearbyButton.disabled = true;
+    nearbyStatus.textContent = "Requesting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const coordinates = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+
+        showGoogleMapsSearch(query, coordinates);
+        nearbyStatus.textContent =
+          "Nearby results are shown by Google Maps. Check provider details and availability directly.";
+        nearbyButton.disabled = false;
+      },
+      error => {
+        const messages = {
+          1: "Location permission was denied. Allow location access in your browser settings, or search Google Maps for places near you.",
+          2: "Your location could not be determined. Try again or search Google Maps for places near you.",
+          3: "The location request timed out. Try again or search Google Maps for places near you."
+        };
+
+        nearbyStatus.textContent =
+          messages[error.code] || "Unable to get your location. You can still search Google Maps for places near you.";
+        showGoogleMapsSearch(query);
+        nearbyButton.disabled = false;
+      },
+      {
+        enableHighAccuracy: false,
+        maximumAge: 60000,
+        timeout: 10000
+      }
+    );
+  });
+}
+
 renderSymptoms();
 renderSelected();
